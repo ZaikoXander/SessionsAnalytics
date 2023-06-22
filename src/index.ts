@@ -72,9 +72,9 @@ class SessionsAnalytics {
 
         const lastEventByUserAdded = eventsSeparatedByUserSessions[visitor][0].at(-1)
 
-        const differenceBetweenCurrentAndLastEventTimestamps = currentEventByUser.timestamp - lastEventByUserAdded!.timestamp
+        const timestampDifference = currentEventByUser.timestamp - lastEventByUserAdded!.timestamp
 
-        if (differenceBetweenCurrentAndLastEventTimestamps <= tenMinutesInMilliseconds) {
+        if (timestampDifference <= tenMinutesInMilliseconds) {
           eventsSeparatedByUserSessions[visitor][0].push(currentEventByUser)
         } else {
           eventsSeparatedByUserSessions[visitor].push([currentEventByUser])
