@@ -4,7 +4,7 @@ import Event from "@src/classes/event"
 
 describe('Event expectations', () => {
   it('should be able to create a event', () => {
-    const url = "/pages/" + faker.animal.cat().replace(/ /g, "-")
+    const url = "/pages/" + faker.animal.cat().replace(/ /g, "-").toLowerCase()
     const visitorId = faker.string.uuid()
     const timestamp = faker.date.anytime().getTime()
     const event = new Event({
@@ -18,7 +18,7 @@ describe('Event expectations', () => {
   })
 
   it('should be able to get event properties', () => {
-    const url = "/pages/" + faker.animal.cat().replace(/ /g, "-")
+    const url = "/pages/" + faker.animal.cat().replace(/ /g, "-").toLowerCase()
     const visitorId = faker.string.uuid()
     const timestamp = faker.date.anytime().getTime()
     const event = new Event({
