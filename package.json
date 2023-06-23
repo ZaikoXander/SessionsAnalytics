@@ -2,6 +2,11 @@
   "name": "sessions-analytics",
   "version": "1.0.0",
   "main": "dist/index.js",
+  "author": {
+    "name": "ZaikoXander",
+    "email": "alexdaniel.lima28@gmail.com",
+    "url": "https://github.com/ZaikoXander"
+  },
   "engines": {
     "node": ">=18.14.1"
   },
