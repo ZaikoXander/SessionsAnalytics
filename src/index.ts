@@ -1,36 +1,7 @@
 import Input from "./classes/input"
-import Output from "./classes/output"
-import SessionsListForEachVisitorGenerator from "./classes/sessionsListForEachVisitorGenerator"
+import SessionsAnalytics from "./classes/sessionsAnalytics"
 
 import IInputObject from "./interfaces/input/inputObject"
-import IOutputObject from "./interfaces/output/outputObject"
-
-const {
-  getVisitorsFromEvents,
-  getEventsByUser,
-  getOrderedEventsByUser,
-  getEventsSeparatedByUserSessions,
-  getSessionsByUser
-} = SessionsListForEachVisitorGenerator
-
-class SessionsAnalytics {
-  private input: Input
-
-  constructor(input: Input) {
-    this.input = input
-  }
-
-  public generateSessionsListForEachVisitor(): IOutputObject {
-    const visitors = getVisitorsFromEvents(this.input)
-    const eventsByUser = getEventsByUser(visitors, this.input)
-    const orderedEventsByUser = getOrderedEventsByUser(visitors, eventsByUser)
-    const eventsSeparatedByUserSessions = getEventsSeparatedByUserSessions(visitors, orderedEventsByUser)
-    const sessionsByUser = getSessionsByUser(visitors, eventsSeparatedByUserSessions)
-    const output = new Output(sessionsByUser)
-
-    return output.toObject()
-  }
-}
 
 const input: IInputObject = {
   "events": [
