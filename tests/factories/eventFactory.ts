@@ -2,8 +2,10 @@ import { faker } from "@faker-js/faker"
 
 import Event from "@src/classes/event"
 
+import urlFactory from "./urlFactory"
+
 function eventFactory(): Event {
-  const url = "/pages/" + faker.animal.cat().replace(/ /g, "-").toLowerCase()
+  const url = urlFactory()
   const visitorId = faker.string.uuid()
   const timestamp = faker.date.anytime().getTime()
   const event = new Event({
