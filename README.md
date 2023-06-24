@@ -1,5 +1,7 @@
 ## Sessions Analytics
 
+###### [Versão em português](./README_pt-BR.md)
+
 ### How to run the code
 
 - Install `nodejs` in you computer
