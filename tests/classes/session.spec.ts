@@ -1,6 +1,7 @@
 import { faker } from "@faker-js/faker"
 
 import Session from "@src/classes/session"
+
 import ISessionByUserObject from "@src/interfaces/session/sessionByUserObject"
 
 describe('Session expectations', () => {
@@ -73,7 +74,7 @@ describe('Session expectations', () => {
       expect(sessionToObject).toStrictEqual(expectedSessionToObject)
     })
 
-    it('should be get sessionToObject properties', () => {
+    it('should be able to get sessionToObject properties', () => {
       const sessionToObject = session.toObject()
       
       expect(sessionToObject.duration).toBeTruthy()
