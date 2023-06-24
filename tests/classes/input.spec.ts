@@ -3,7 +3,7 @@ import { faker } from "@faker-js/faker"
 import Event from "@src/classes/event"
 import Input from "@src/classes/input"
 
-import eventFactory from "@tests/factories/eventFactory"
+import eventFactory from "../factories/eventFactory"
 
 describe('Input expectations', () => {
   it('should be able to create a input', () => {
