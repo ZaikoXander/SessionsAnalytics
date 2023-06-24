@@ -1,20 +1,17 @@
 import Input from "./classes/input"
-import Event from "./classes/event"
-import EventByUser from "./classes/eventByUser"
-import Session from "./classes/session"
 import Output from "./classes/output"
+import SessionsListForEachVisitorGenerator from "./classes/sessionsListForEachVisitorGenerator"
 
 import IInputObject from "./interfaces/input/inputObject"
-import ISessionsByUser from "./interfaces/session/sessionsByUser"
 import IOutputObject from "./interfaces/output/outputObject"
 
-interface IEventsByUser {
-  [key: string]: EventByUser[]
-}
-
-interface IEventsSeparatedByUserSessions {
-  [key: string]: EventByUser[][]
-}
+const {
+  getVisitorsFromEvents,
+  getEventsByUser,
+  getOrderedEventsByUser,
+  getEventsSeparatedByUserSessions,
+  getSessionsByUser
+} = SessionsListForEachVisitorGenerator
 
 class SessionsAnalytics {
   private input: Input
@@ -23,83 +20,12 @@ class SessionsAnalytics {
     this.input = input
   }
 
-  public generateListOfSessionsForEachVisitor(): IOutputObject {
-    const visitors: string[] = []
-    this.input.events.forEach(event => {
-      if (!visitors.includes(event.visitorId)) {
-        visitors.push(event.visitorId)
-      }
-    })
-  
-    const eventsByUser: IEventsByUser = {}
-    visitors.forEach(visitor => {
-      const events: Event[] = this.input.events.filter(event => event.visitorId === visitor)
-
-      eventsByUser[visitor] = events.map(({ url, timestamp }) => new EventByUser({ url, timestamp }))
-    })
-
-    const orderedEventsByUser: IEventsByUser = {}
-    visitors.forEach(visitor => {
-      orderedEventsByUser[visitor] = eventsByUser[visitor].sort((a, b) => a.timestamp - b.timestamp)
-    })
-
-    const tenMinutesInMilliseconds = 600000
-
-    const eventsSeparatedByUserSessions: IEventsSeparatedByUserSessions = {}
-
-    visitors.forEach(visitor => {
-      for (let i = 0; i < orderedEventsByUser[visitor].length; i++) {
-        const currentEventByUser = orderedEventsByUser[visitor][i]
-
-        if (i === 0) {
-          eventsSeparatedByUserSessions[visitor] = [[currentEventByUser]]
-          continue
-        }
-
-        const lastEventByUserAdded = eventsSeparatedByUserSessions[visitor][0].at(-1)
-
-        const timestampDifference = currentEventByUser.timestamp - lastEventByUserAdded!.timestamp
-
-        if (timestampDifference <= tenMinutesInMilliseconds) {
-          eventsSeparatedByUserSessions[visitor][0].push(currentEventByUser)
-        } else {
-          eventsSeparatedByUserSessions[visitor].push([currentEventByUser])
-        }
-      }
-    })
-
-    function createSessionByEvents(visitor: string, index: number): Session {
-      const lastEventByUserTimestamp = eventsSeparatedByUserSessions[visitor][index].at(-1)!.timestamp
-      const firstEventByUserTimestamp = eventsSeparatedByUserSessions[visitor][index][0].timestamp
-
-      const duration = lastEventByUserTimestamp - firstEventByUserTimestamp
-      const pages = eventsSeparatedByUserSessions[visitor][index].map(eventByUser => eventByUser.url)
-      const startTime =  eventsSeparatedByUserSessions[visitor][index][0].timestamp
-
-      const session = new Session({
-        duration,
-        pages,
-        startTime
-      })
-
-      return session
-    }
-
-    const sessionsByUser: ISessionsByUser = {}
-
-    visitors.forEach(visitor => {
-      for (let i = 0; i < eventsSeparatedByUserSessions[visitor].length; i++) {
-        const currentSessionByUser = createSessionByEvents(visitor, i)
-
-        if (i === 0) {
-          sessionsByUser[visitor] = [currentSessionByUser]
-          continue
-        }
-
-        sessionsByUser[visitor].push(currentSessionByUser)
-      }
-    })
-
+  public generateSessionsListForEachVisitor(): IOutputObject {
+    const visitors = getVisitorsFromEvents(this.input)
+    const eventsByUser = getEventsByUser(visitors, this.input)
+    const orderedEventsByUser = getOrderedEventsByUser(visitors, eventsByUser)
+    const eventsSeparatedByUserSessions = getEventsSeparatedByUserSessions(visitors, orderedEventsByUser)
+    const sessionsByUser = getSessionsByUser(visitors, eventsSeparatedByUserSessions)
     const output = new Output(sessionsByUser)
 
     return output.toObject()
@@ -143,7 +69,7 @@ const input: IInputObject = {
 
 const sa = new SessionsAnalytics(Input.fromObject(input))
 
-const output = sa.generateListOfSessionsForEachVisitor()
+const output = sa.generateSessionsListForEachVisitor()
 
 const formattedOutput = JSON.stringify(output, null, 2)
 
