@@ -63,18 +63,18 @@ class SessionsListForEachVisitorGenerator {
           continue
         }
   
-        const lastEventByUserAdded = eventsSeparatedByUserSessions[visitor][0].at(-1)
+        const lastEventByUserAdded = eventsSeparatedByUserSessions[visitor].at(-1)!.at(-1)!
   
-        const timestampDifference = currentEventByUser.timestamp - lastEventByUserAdded!.timestamp
-  
+        const timestampDifference = currentEventByUser.timestamp - lastEventByUserAdded.timestamp
+
         if (timestampDifference <= tenMinutesInMilliseconds) {
-          eventsSeparatedByUserSessions[visitor][0].push(currentEventByUser)
+          eventsSeparatedByUserSessions[visitor].at(-1)!.push(currentEventByUser)
         } else {
           eventsSeparatedByUserSessions[visitor].push([currentEventByUser])
         }
       }
     })
-    
+
     return eventsSeparatedByUserSessions
   }
   
